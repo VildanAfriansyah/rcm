@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "695362728657",
+    "firebase_url": "https://real-time-4c432.firebaseio.com",
+    "project_id": "real-time-4c432",
+    "storage_bucket": "real-time-4c432.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695362728657:android:e0474fdbb5e343e84e0bf0",
+        "android_client_info": {
+          "package_name": "com.rcm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "695362728657-pl16uamt5hr4arff4ejhulooukk1hgaa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPAh29gs9vRAGgpBtFJp765wrrKgq2ND8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "695362728657-pl16uamt5hr4arff4ejhulooukk1hgaa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
