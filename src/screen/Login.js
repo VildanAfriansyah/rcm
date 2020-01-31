@@ -1,0 +1,145 @@
+import React, {Component} from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+import {Card} from 'native-base';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+import LinearGradient from 'react-native-linear-gradient';
+
+export default class Login extends Component {
+  login() {
+    this.props.navigation.navigate('Home');
+  }
+
+  render() {
+    return (
+      <View style={styles.root}>
+        <View style={styles.box}>
+          <View style={styles.image}>
+            <Image
+              source={require('../assets/login.jpg')}
+              style={styles.image}
+            />
+          </View>
+          <Card style={styles.card} transparent>
+            <View style={styles.formItem}>
+              <TextInput
+                style={styles.input}
+                keyboardType="email-address"
+                placeholder="Email"
+                placeholderTextColor="#7e8a8c"
+              />
+            </View>
+            <View style={styles.formItem}>
+              <TextInput
+                style={styles.input}
+                secureTextEntry
+                placeholder="Password"
+                placeholderTextColor="#7e8a8c"
+              />
+            </View>
+
+            <View style={styles.alert}>
+              {/* {msg && <Text style = { styles.alert }>{this.props.login.data.msg}</Text>} */}
+            </View>
+            <View style={styles.row}>
+              <View style={styles.row}>
+                <LinearGradient
+                  style={styles.buttonLogin}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 0}}
+                  colors={['#e78d8d', '#F9878F']}>
+                  <TouchableOpacity
+                    style={styles.buttonLogin}
+                    onPress={() => this.login()}>
+                    <Text style={styles.buttonTextLogin}>MASUK</Text>
+                  </TouchableOpacity>
+                </LinearGradient>
+              </View>
+              <View style={styles.row}>
+                <TouchableOpacity style={styles.buttonRegister}>
+                  <Text style={styles.buttonTextRegister}>BUAT AKUN</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Card>
+        </View>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#FFF',
+  },
+  image: {
+    width: wp('80%'),
+    height: hp('40%'),
+    justifyContent: 'center',
+    alignSelf: 'center',
+    resizeMode: 'contain',
+  },
+  box: {
+    flex: 1,
+    // justifyContent: 'center',
+  },
+  card: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    backgroundColor: 'rgb(157, 228, 245)',
+    borderRadius: 20,
+    width: wp('80%'),
+  },
+  formItem: {
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  input: {
+    borderWidth: 0.3,
+    borderRadius: 8,
+    margin: 10,
+    fontSize: 15,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  buttonLogin: {
+    borderRadius: 8,
+    height: hp('6%'),
+    width: wp('30%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 5,
+  },
+  buttonTextLogin: {
+    fontWeight: 'bold',
+    color: '#FFF',
+    fontSize: 15,
+  },
+  buttonRegister: {
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    height: hp('6%'),
+    width: wp('30%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 5,
+  },
+  buttonTextRegister: {
+    fontWeight: 'bold',
+    color: 'rgb(249,135,143)',
+    fontSize: 15,
+  },
+});

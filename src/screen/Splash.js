@@ -6,7 +6,12 @@ import {
 } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 
-const Splash = () => {
+const Splash = props => {
+  useEffect(() => {
+    setTimeout(() => {
+      props.navigation.navigate('Login');
+    }, 2000);
+  }, [props.navigation]);
   return (
     <LinearGradient
       start={{x: 0.0, y: 0.25}}

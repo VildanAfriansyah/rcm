@@ -8,17 +8,42 @@ import splash from './src/screen/Splash';
 import Home from './src/screen/Home';
 import Map from './src/screen/Map';
 import Profile from './src/screen/Profile';
+import Login from './src/screen/Login';
+
+const loginStack = createStackNavigator({
+  Login: {
+    screen: Login,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+});
 
 const homeStack = createStackNavigator({
-  Home,
+  Home: {
+    screen: Home,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
 });
 
 const mapStack = createStackNavigator({
-  Map,
+  Map: {
+    screen: Map,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
 });
 
 const profileStack = createStackNavigator({
-  Profile,
+  Profile: {
+    screen: Profile,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
 });
 
 const bottomTab = createBottomTabNavigator({
@@ -60,7 +85,13 @@ const bottomTab = createBottomTabNavigator({
         <Icon name="user" color={tintColor} size={28} />
       ),
       tabBarOptions: {
-        activeTintColor: '#006b3a',
+        activeTintColor: '#30BCC9',
+        activeBackgroundColor: '#e76565',
+        inactiveTintColor: '#e76565',
+        style: {
+            backgroundColor: 'white',
+            borderTopColor: 'transparent',
+        },
         labelStyle: {
           fontWeight: 'bold',
         },
@@ -71,6 +102,7 @@ const bottomTab = createBottomTabNavigator({
 
 const SwitchContainer = createSwitchNavigator({
   splash,
+  loginStack,
   bottomTab,
 });
 
