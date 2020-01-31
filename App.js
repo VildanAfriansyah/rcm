@@ -9,10 +9,17 @@ import Home from './src/screen/Home';
 import Map from './src/screen/Map';
 import Profile from './src/screen/Profile';
 import Login from './src/screen/Login';
+import Register from './src/screen/Register';
 
 const loginStack = createStackNavigator({
   Login: {
     screen: Login,
+    navigationOptions: {
+      headerShown: false,
+    },
+  },
+  Register: {
+    screen: Register,
     navigationOptions: {
       headerShown: false,
     },
@@ -51,11 +58,17 @@ const bottomTab = createBottomTabNavigator({
     screen: homeStack,
     navigationOptions: {
       title: 'Chat',
-      tabBarIcon: ({focused, horizontal, tintcolor}) => (
-        <Icon name="comments" color={tintcolor} size={28} />
+      tabBarIcon: ({focused, horizontal, tintColor}) => (
+        <Icon name="comments" color={tintColor} size={28} />
       ),
       tabBarOptions: {
-        activeTintColor: '#006b3a',
+        activeTintColor: '#FADA80',
+        activeBackgroundColor: '#30BCC9',
+        inactiveTintColor: '#30BCC9',
+        style: {
+          backgroundColor: 'white',
+          borderTopColor: 'transparent',
+        },
         labelStyle: {
           fontWeight: 'bold',
         },
@@ -70,7 +83,13 @@ const bottomTab = createBottomTabNavigator({
         <Icon name="map-marker" color={tintColor} size={28} />
       ),
       tabBarOptions: {
-        activeTintColor: '#006b3a',
+        activeTintColor: '#FADA80',
+        activeBackgroundColor: '#30BCC9',
+        inactiveTintColor: '#30BCC9',
+        style: {
+          backgroundColor: 'white',
+          borderTopColor: 'transparent',
+        },
         labelStyle: {
           fontWeight: 'bold',
         },
@@ -89,8 +108,8 @@ const bottomTab = createBottomTabNavigator({
         activeBackgroundColor: '#30BCC9',
         inactiveTintColor: '#30BCC9',
         style: {
-            backgroundColor: 'white',
-            borderTopColor: 'transparent',
+          backgroundColor: 'white',
+          borderTopColor: 'transparent',
         },
         labelStyle: {
           fontWeight: 'bold',

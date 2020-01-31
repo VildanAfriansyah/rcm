@@ -15,21 +15,17 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
 
-export default class Login extends Component {
+export default class Register extends Component {
   state = {email: '', password: '', errorMessage: null};
 
-  loginPress = () => {
+  register = () => {
     const {email, password} = this.state;
     firebase
       .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate('Home'))
+      .createUserWithEmailAndPassword(email, password)
+      .then(user => this.props.navigation.navigate('Login'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
-
-  register() {
-    this.props.navigation.navigate('Register');
-  }
 
   render() {
     return (
@@ -45,6 +41,13 @@ export default class Login extends Component {
             )}
           </View>
           <Card style={styles.card} transparent>
+            <View style={styles.formItem}>
+              <TextInput
+                style={styles.input}
+                placeholder="Username"
+                placeholderTextColor="#7e8a8c"
+              />
+            </View>
             <View style={styles.formItem}>
               <TextInput
                 style={styles.input}
@@ -78,7 +81,7 @@ export default class Login extends Component {
                   colors={['#FADA80', '#f0c95d']}>
                   <TouchableOpacity
                     style={styles.buttonLogin}
-                    onPress={this.loginPress}>
+                    onPress={() => this.login()}>
                     <Text style={styles.buttonTextLogin}>MASUK</Text>
                   </TouchableOpacity>
                 </LinearGradient>
@@ -91,7 +94,7 @@ export default class Login extends Component {
                   colors={['#FADA80', '#f0c95d']}>
                   <TouchableOpacity
                     style={styles.buttonLogin}
-                    onPress={() => this.register()}>
+                    onPress={this.register}>
                     <Text style={styles.buttonTextRegister}>REGISTER</Text>
                   </TouchableOpacity>
                 </LinearGradient>
