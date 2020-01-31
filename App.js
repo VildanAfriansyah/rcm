@@ -85,9 +85,9 @@ const bottomTab = createBottomTabNavigator({
         <Icon name="user" color={tintColor} size={28} />
       ),
       tabBarOptions: {
-        activeTintColor: '#30BCC9',
-        activeBackgroundColor: '#e76565',
-        inactiveTintColor: '#e76565',
+        activeTintColor: '#FADA80',
+        activeBackgroundColor: '#30BCC9',
+        inactiveTintColor: '#30BCC9',
         style: {
             backgroundColor: 'white',
             borderTopColor: 'transparent',

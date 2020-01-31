@@ -56,7 +56,7 @@ export default class Login extends Component {
                   style={styles.buttonLogin}
                   start={{x: 0, y: 0}}
                   end={{x: 1, y: 0}}
-                  colors={['#e78d8d', '#F9878F']}>
+                  colors={['#FADA80', '#f0c95d']}>
                   <TouchableOpacity
                     style={styles.buttonLogin}
                     onPress={() => this.login()}>
@@ -65,9 +65,17 @@ export default class Login extends Component {
                 </LinearGradient>
               </View>
               <View style={styles.row}>
-                <TouchableOpacity style={styles.buttonRegister}>
-                  <Text style={styles.buttonTextRegister}>BUAT AKUN</Text>
-                </TouchableOpacity>
+                <LinearGradient
+                  style={styles.buttonLogin}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 0}}
+                  colors={['#FADA80', '#f0c95d']}>
+                  <TouchableOpacity
+                    style={styles.buttonLogin}
+                    onPress={() => this.login()}>
+                    <Text style={styles.buttonTextRegister}>REGISTER</Text>
+                  </TouchableOpacity>
+                </LinearGradient>
               </View>
             </View>
           </Card>
@@ -125,7 +133,7 @@ const styles = StyleSheet.create({
   },
   buttonTextLogin: {
     fontWeight: 'bold',
-    color: '#FFF',
+    color: '#FAF3E3',
     fontSize: 15,
   },
   buttonRegister: {
@@ -139,7 +147,7 @@ const styles = StyleSheet.create({
   },
   buttonTextRegister: {
     fontWeight: 'bold',
-    color: 'rgb(249,135,143)',
+    color: '#FAF3E3',
     fontSize: 15,
   },
 });
