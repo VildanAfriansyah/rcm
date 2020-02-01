@@ -23,7 +23,7 @@ export default class Login extends Component {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => this.props.navigation.navigate('Home'))
+      .then(() => this.props.navigation.navigate('homeStack'))
       .catch(error => this.setState({errorMessage: error.message}));
   };
 
@@ -40,9 +40,6 @@ export default class Login extends Component {
               source={require('../assets/login.jpg')}
               style={styles.image}
             />
-            {this.state.errorMessage && (
-              <Text style={{color: 'red'}}>{this.state.errorMessage}</Text>
-            )}
           </View>
           <Card style={styles.card} transparent>
             <View style={styles.formItem}>
@@ -98,6 +95,12 @@ export default class Login extends Component {
               </View>
             </View>
           </Card>
+
+          <View style={{alignSelf: 'center'}}>
+            {this.state.errorMessage && (
+              <Text style={{color: 'red'}}>{this.state.errorMessage}</Text>
+            )}
+          </View>
         </View>
       </View>
     );

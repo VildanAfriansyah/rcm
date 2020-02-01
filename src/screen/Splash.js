@@ -1,15 +1,22 @@
 import React, {useEffect} from 'react';
-import {View, StyleSheet, Image, Text, ImageBackground} from 'react-native';
+import {StyleSheet, Image} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
+import firebase from 'react-native-firebase';
+
+const {currentUser} = firebase.auth();
 
 const Splash = props => {
   useEffect(() => {
     setTimeout(() => {
-      props.navigation.navigate('Login');
+      if (currentUser === null) {
+        props.navigation.navigate('loginStack');
+      } else {
+        props.navigation.navigate('homeStack');
+      }
     }, 2000);
   }, [props.navigation]);
   return (

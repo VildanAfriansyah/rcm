@@ -36,9 +36,6 @@ export default class Register extends Component {
               source={require('../assets/login.jpg')}
               style={styles.image}
             />
-            {this.state.errorMessage && (
-              <Text style={{color: 'red'}}>{this.state.errorMessage}</Text>
-            )}
           </View>
           <Card style={styles.card} transparent>
             <View style={styles.formItem}>
@@ -69,9 +66,6 @@ export default class Register extends Component {
               />
             </View>
 
-            <View style={styles.alert}>
-              {/* {msg && <Text style = { styles.alert }>{this.props.login.data.msg}</Text>} */}
-            </View>
             <View style={styles.row}>
               <View style={styles.row}>
                 <LinearGradient
@@ -101,6 +95,11 @@ export default class Register extends Component {
               </View>
             </View>
           </Card>
+          <View style={{alignSelf: 'center'}}>
+            {this.state.errorMessage && (
+              <Text style={{color: 'red'}}>{this.state.errorMessage}</Text>
+            )}
+          </View>
         </View>
       </View>
     );

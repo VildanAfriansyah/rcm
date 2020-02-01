@@ -1,45 +1,52 @@
 import React from 'react';
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Image} from 'react-native';
 import {Right, Icon, Input} from 'native-base';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 const contact = [
   {
     id: 1,
     name: 'User 1',
+    avatar: 'https://placeimg.com/140/140/any',
     chat: 'Hello',
     date: '19/01/2020',
   },
   {
     id: 2,
     name: 'User 2',
+    avatar: 'https://placeimg.com/140/140/any',
     chat: 'Hi',
     date: '1/01/2020',
   },
   {
     id: 3,
     name: 'User 3',
+    avatar: 'https://placeimg.com/140/140/any',
     chat: 'Bonjour',
     date: '28/11/2019',
   },
   {
     id: 4,
     name: 'User 4',
+    avatar: 'https://placeimg.com/140/140/any',
     chat: 'Namaste',
     date: '10/01/2020',
   },
   {
     id: 5,
     name: 'User 5',
+    avatar: 'https://placeimg.com/140/140/any',
     chat: 'Ni Hao',
     date: '30/12/2019',
   },
   {
     id: 6,
     name: 'User 6',
+    avatar: 'https://placeimg.com/140/140/any',
     chat: 'Hallo',
     date: '1/01/2020',
   },
@@ -67,21 +74,23 @@ const Home = props => {
         <FlatList
           data={contact}
           renderItem={({item}) => (
-            <View>
-              <View style={styles.listChat}>
-                <View style={styles.profilePic}>
-                  <Text>{item.name}</Text>
+            <TouchableOpacity onPress={() => props.navigation.navigate('Chat')}>
+              <View>
+                <View style={styles.listChat}>
+                  <View style={styles.profilePic}>
+                    <Image source={{uri: item.avatar}} style={styles.avatar} />
+                  </View>
+                  <View>
+                    <Text style={styles.personName}>{item.name}</Text>
+                    <Text style={styles.personChat}>{item.chat}</Text>
+                  </View>
+                  <Right>
+                    <Text>{item.date}</Text>
+                  </Right>
                 </View>
-                <View>
-                  <Text style={styles.personName}>{item.name}</Text>
-                  <Text style={styles.personChat}>{item.chat}</Text>
-                </View>
-                <Right>
-                  <Text>{item.date}</Text>
-                </Right>
+                <View style={styles.lineStyle} />
               </View>
-              <View style={styles.lineStyle} />
-            </View>
+            </TouchableOpacity>
           )}
           keyExtractor={item => item.id}
         />
@@ -96,9 +105,9 @@ const styles = StyleSheet.create({
   },
   profilePic: {
     height: hp('8%'),
-    width: wp('15%'),
+    width: wp('16%'),
+    borderRadius: wp('50%'),
     backgroundColor: '#eddbb9',
-    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -152,6 +161,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     alignSelf: 'center',
+  },
+  avatar: {
+    height: hp('8%'),
+    width: wp('16%'),
+    borderRadius: wp('50%'),
+    overflow: 'hidden',
+    backgroundColor: '#000',
   },
 });
 

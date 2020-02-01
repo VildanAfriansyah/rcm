@@ -10,6 +10,7 @@ import Map from './src/screen/Map';
 import Profile from './src/screen/Profile';
 import Login from './src/screen/Login';
 import Register from './src/screen/Register';
+import Chat from './src/screen/Chat';
 
 const loginStack = createStackNavigator({
   Login: {
@@ -26,14 +27,20 @@ const loginStack = createStackNavigator({
   },
 });
 
-const homeStack = createStackNavigator({
-  Home: {
-    screen: Home,
-    navigationOptions: {
-      headerShown: false,
-    },
-  },
-});
+// const homeStack = createStackNavigator({
+//   Home: {
+//     screen: Home,
+//     navigationOptions: {
+//       headerShown: false,
+//     },
+//   },
+//   Chat: {
+//     screen: Chat,
+//     navigationOptions: {
+//       headerShown: false,
+//     },
+//   },
+// },{ initialRouteName: 'Home' });
 
 const mapStack = createStackNavigator({
   Map: {
@@ -55,7 +62,7 @@ const profileStack = createStackNavigator({
 
 const bottomTab = createBottomTabNavigator({
   homeStack: {
-    screen: homeStack,
+    screen: Home,
     navigationOptions: {
       title: 'Chat',
       tabBarIcon: ({focused, horizontal, tintColor}) => (
@@ -119,10 +126,21 @@ const bottomTab = createBottomTabNavigator({
   },
 });
 
+const AppNavigationStack = createStackNavigator(
+  {
+    bottomTab,
+    Chat,
+    loginStack,
+  },
+  {
+    initialRouteName: 'bottomTab',
+    headerMode: 'none',
+  },
+);
+
 const SwitchContainer = createSwitchNavigator({
   splash,
-  loginStack,
-  bottomTab,
+  AppNavigationStack,
 });
 
 const AppContainer = createAppContainer(SwitchContainer);
