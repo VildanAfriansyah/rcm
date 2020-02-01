@@ -6,6 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Platform,
+  PermissionsAndroid,
+  ToastAndroid,
 } from 'react-native';
 import {Card} from 'native-base';
 import {
@@ -14,17 +17,150 @@ import {
 } from 'react-native-responsive-screen';
 import LinearGradient from 'react-native-linear-gradient';
 import firebase from 'react-native-firebase';
+import Geolocation from 'react-native-geolocation-service';
 
 export default class Register extends Component {
-  state = {email: '', password: '', errorMessage: null};
+  constructor(props) {
+    super(props);
+    this.state = {
+      isVisible: false,
+      name: '',
+      email: '',
+      password: '',
+      latitude: null,
+      longitude: null,
+      errorMessage: null,
+      loading: false,
+      updatesEnabled: false,
+    };
+  }
+
+  componentDidMount = async () => {
+    await this.getLocation();
+  };
+
+  hasLocationPermission = async () => {
+    if (
+      Platform.OS === 'ios' ||
+      (Platform.OS === 'android' && Platform.Version < 23)
+    ) {
+      return true;
+    }
+    const hasPermission = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    if (hasPermission) {
+      return true;
+    }
+    const status = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    if (status === PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    }
+    if (status === PermissionsAndroid.RESULTS.DENIED) {
+      ToastAndroid.show(
+        'Location Permission Denied By User.',
+        ToastAndroid.LONG,
+      );
+    } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
+      ToastAndroid.show(
+        'Location Permission Revoked By User.',
+        ToastAndroid.LONG,
+      );
+    }
+    return false;
+  };
+
+  getLocation = async () => {
+    const hasLocationPermission = await this.hasLocationPermission();
+
+    if (!hasLocationPermission) {
+      return;
+    }
+
+    this.setState({loading: true}, () => {
+      Geolocation.getCurrentPosition(
+        position => {
+          this.setState({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            loading: false,
+          });
+          console.warn(position);
+        },
+        error => {
+          this.setState({errorMessage: error, loading: false});
+          console.warn(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 2000,
+          distanceFilter: 50,
+          forceRequestLocation: true,
+        },
+      );
+    });
+  };
 
   register = () => {
-    const {email, password} = this.state;
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(user => this.props.navigation.navigate('Login'))
-      .catch(error => this.setState({errorMessage: error.message}));
+    const {name, email, password} = this.state;
+    if (name.length < 1) {
+      ToastAndroid.show('Please input your fullname', ToastAndroid.LONG);
+    } else if (email.length < 6) {
+      ToastAndroid.show(
+        'Please input a valid email address',
+        ToastAndroid.LONG,
+      );
+    } else if (password.length < 6) {
+      ToastAndroid.show(
+        'Password must be at least 6 characters',
+        ToastAndroid.LONG,
+      );
+    } else {
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(response => {
+          console.warn(response);
+          firebase
+            .database()
+            .ref('/user/' + response.user.uid)
+            .set({
+              name: this.state.name,
+              status: 'Offline',
+              email: this.state.email,
+              photo: 'https://i.imgur.com/1KoMPoK.png',
+              latitude: this.state.latitude,
+              longitude: this.state.longitude,
+              id: response.user.uid,
+            })
+            .catch(error => {
+              ToastAndroid.show(error.message, ToastAndroid.LONG);
+              this.setState({
+                name: '',
+                email: '',
+                password: '',
+              });
+            });
+          ToastAndroid.show(
+            'Your account is successfully registered!',
+            ToastAndroid.LONG,
+          );
+
+          this.props.navigation.navigate('Login');
+        })
+        .catch(error => {
+          this.setState({
+            errorMessage: error.message,
+            name: '',
+            email: '',
+            password: '',
+          });
+          ToastAndroid.show(this.state.errorMessage.message, ToastAndroid.LONG);
+        });
+    }
   };
 
   render() {
@@ -43,6 +179,8 @@ export default class Register extends Component {
                 style={styles.input}
                 placeholder="Username"
                 placeholderTextColor="#7e8a8c"
+                onChangeText={name => this.setState({name})}
+                value={this.state.name}
               />
             </View>
             <View style={styles.formItem}>
@@ -95,11 +233,11 @@ export default class Register extends Component {
               </View>
             </View>
           </Card>
-          <View style={{alignSelf: 'center'}}>
+          {/* <View style={{alignSelf: 'center'}}>
             {this.state.errorMessage && (
               <Text style={{color: 'red'}}>{this.state.errorMessage}</Text>
             )}
-          </View>
+          </View> */}
         </View>
       </View>
     );
