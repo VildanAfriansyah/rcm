@@ -138,7 +138,7 @@ export default class Login extends Component {
             let user = Object.values(data);
             AsyncStorage.setItem('user.email', user[0].email);
             AsyncStorage.setItem('user.name', user[0].name);
-            AsyncStorage.setItem('user.photo', user[0].photo);
+            AsyncStorage.setItem('user.image', user[0].image);
           }
         });
       firebase

@@ -8,9 +8,9 @@ import {
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import firebase from 'react-native-firebase';
 import AsyncStorage from '@react-native-community/async-storage';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-class Home extends Component {
+class Contact extends Component {
   constructor(props) {
     super(props);
   }
@@ -46,20 +46,13 @@ class Home extends Component {
         <View style={styles.root}>
           <View style={styles.header}>
             <View style={styles.row}>
-              <Text style={styles.title}>Chat</Text>
+              <Text style={styles.title}>Contact</Text>
               <Right>
                 <TouchableOpacity
-                  onPress={() => this.props.navigation.navigate('Contact')}>
-                  <Icon name="contacts" style={styles.setting} />
+                  onPress={() => this.props.navigation.navigate('Add')}>
+                  <Icon name="md-person-add" style={styles.setting} />
                 </TouchableOpacity>
               </Right>
-            </View>
-            <View style={{height: hp('8%')}}>
-              <Input
-                style={styles.search}
-                placeholder="Search Message"
-                placeholderTextColor="#D1DAE0"
-              />
             </View>
           </View>
           <FlatList
@@ -106,7 +99,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   header: {
-    height: hp('15%'),
+    height: hp('10%'),
     backgroundColor: '#FFF',
     elevation: 10,
     padding: 20,
@@ -164,4 +157,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Contact;

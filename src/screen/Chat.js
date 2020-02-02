@@ -80,6 +80,7 @@ export default class Chat extends React.Component {
     const userId = await AsyncStorage.getItem('userid');
     const userName = await AsyncStorage.getItem('user.name');
     const userAvatar = await AsyncStorage.getItem('user.photo');
+    console.log(this.state.person);
     this.setState({userId, userName, userAvatar});
     firebase
       .database()
@@ -131,12 +132,15 @@ export default class Chat extends React.Component {
             <TouchableOpacity onPress={() => this.back()}>
               <Icon1 name="arrow-left" style={styles.icon} />
             </TouchableOpacity>
-            <View style={styles.profilePic}>
-              <Text>asd</Text>
+            <View>
+              <Image
+                source={{uri: this.state.person.image}}
+                style={styles.profilePic}
+              />
             </View>
             <View>
-              <Text style={styles.personName}>SkyNeko</Text>
-              <Text style={styles.status}>Online</Text>
+              <Text style={styles.personName}>{this.state.person.name}</Text>
+              <Text style={styles.status}>{this.state.person.status}</Text>
             </View>
             <Right>
               <Icon name="more" style={styles.setting} />

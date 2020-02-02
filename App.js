@@ -11,6 +11,8 @@ import Profile from './src/screen/Profile';
 import Login from './src/screen/Login';
 import Register from './src/screen/Register';
 import Chat from './src/screen/Chat';
+import Contact from './src/screen/contact';
+import Add from './src/screen/Add';
 
 const loginStack = createStackNavigator({
   Login: {
@@ -130,6 +132,8 @@ const AppNavigationStack = createStackNavigator(
   {
     bottomTab,
     Chat,
+    Contact,
+    Add,
     loginStack,
   },
   {

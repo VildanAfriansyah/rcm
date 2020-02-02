@@ -154,7 +154,7 @@ export default class Maps extends Component {
               }}>
               <View>
                 <Image
-                  source={{uri: item.photo}}
+                  source={{uri: item.image}}
                   style={{width: 40, height: 40, borderRadius: 50}}
                 />
                 <Text>{item.name}</Text>
