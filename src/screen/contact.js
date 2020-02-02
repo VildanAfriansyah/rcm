@@ -13,32 +13,56 @@ import Icon from 'react-native-vector-icons/Ionicons';
 class Contact extends Component {
   constructor(props) {
     super(props);
-  }
-  static navigationOptions = {
-    headerShown: false,
-  };
-  state = {
-    userList: [],
-    refreshing: false,
-    uid: '',
-  };
 
-  componentDidMount = async () => {
-    const uid = await AsyncStorage.getItem('userid');
-    this.setState({uid: uid, refreshing: true});
-    await firebase
-      .database()
-      .ref('/user')
-      .on('child_added', data => {
-        let person = data.val();
-        if (person.id != uid) {
-          this.setState(prevData => {
-            return {userList: [...prevData.userList, person]};
+    this.state = {
+      isAuth: null,
+      uid: null,
+      email: null,
+      friendList: [],
+      modalVisible: false,
+      modalRefresh: false,
+      emailAddFriend: null,
+    };
+  }
+
+  async componentDidMount() {
+    await firebase.auth().onAuthStateChanged(async user => {
+      if (user) {
+        await this.setState({
+          isAuth: true,
+          uid: user.uid,
+          email: user.email,
+        });
+        await firebase
+          .database()
+          .ref('mess/' + this.state.uid)
+          .on('value', async snapshot => {
+            if (typeof snapshot.val().friendList !== 'undefined') {
+              const keyFriendList = await Object.keys(
+                snapshot.val().friendList,
+              );
+              const valueFriendList = await Object.values(
+                snapshot.val().friendList,
+              );
+              await valueFriendList.map(async (item, index) => {
+                const uid = await keyFriendList[index];
+                await firebase
+                  .database()
+                  .ref('friendList/' + uid)
+                  .on('value', async snapshot => {
+                    await this.state.friendList.push({
+                      uid: uid,
+                      data: snapshot.val(),
+                    });
+                  });
+              });
+            }
           });
-          this.setState({refreshing: false});
-        }
-      });
-  };
+      } else {
+        await this.props.navigation.replace('Login');
+      }
+    });
+  }
 
   render(props) {
     return (
@@ -56,11 +80,12 @@ class Contact extends Component {
             </View>
           </View>
           <FlatList
-            data={this.state.userList}
+            data={this.state.friendList}
             renderItem={({item}) => (
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Chat', {item})}>
                 <View>
+    {console.log(this.state.friendList)}
                   <View style={styles.listChat}>
                     <View style={styles.profilePic}>
                       <Image source={{uri: item.image}} style={styles.avatar} />
@@ -77,7 +102,7 @@ class Contact extends Component {
                 </View>
               </TouchableOpacity>
             )}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.uid}
           />
         </View>
       </>

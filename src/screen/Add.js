@@ -6,6 +6,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import firebase from 'react-native-firebase';
+import AsyncStorage from '@react-native-community/async-storage';
 
 class Contact extends Component {
   constructor(props) {
@@ -13,13 +14,37 @@ class Contact extends Component {
 
     this.state = {
       isAuth: null,
-      uid: null,
+      id: null,
       email: null,
+      name: null,
+      latitude: null,
+      longitude: null,
+      image: null,
       friendList: [],
       modalVisible: false,
       modalRefresh: false,
       emailAddFriend: null,
     };
+  }
+
+  async componentDidMount() {
+    // await firebase.auth().onAuthStateChanged(async user => {
+    //   if (user) {
+    //     await this.setState({
+    //       isAuth: true,
+    //       id: user.uid,
+    //       email: user.email,
+    //     });
+    //   } else {
+    //     await this.props.navigation.replace('loginStack');
+    //   }
+    // });
+    const {currentUser} = firebase.auth();
+    const id = await AsyncStorage.getItem('userid');
+    const name = await AsyncStorage.getItem('user.name');
+    const image = await AsyncStorage.getItem('user.image');
+    const email = await AsyncStorage.getItem('user.email');
+    this.setState({currentUser, id, name, image, email});
   }
 
   onSubmitAddFriend = event => {
@@ -36,12 +61,12 @@ class Contact extends Component {
           firebase
             .database()
             .ref('mess/')
-            .child(this.state.uid)
+            .child(this.state.id)
             .once('value', async snapshot => {
               if ('friendList' in db_users) {
                 const friendList = await Object.keys(snapshot.val().friendList);
                 const cekFriendList = friendList.find(
-                  item => item === friend.uid_users,
+                  item => item === friend.id_users,
                 );
                 if (cekFriendList !== undefined) {
                   Alert.alert(
@@ -55,63 +80,12 @@ class Contact extends Component {
                     ],
                     {cancelable: false},
                   );
-                } else {
-                  await firebase
-                    .database()
-                    .ref('mess/')
-                    .child(this.state.uid)
-                    .child('/friendList/')
-                    .child(friend.id)
-                    .set({data: true});
-
-                  await firebase
-                    .database()
-                    .ref('mess/')
-                    .child(this.state.uid)
-                    .child('/friendList/')
-                    .child(friend.id)
-                    .child('/data')
-                    .push({incoming: false});
-
-                  await firebase
-                    .database()
-                    .ref('mess/')
-                    .child(friend.id)
-                    .child('/friendList/')
-                    .child(this.state.uid)
-                    .set({data: true});
-
-                  await firebase
-                    .database()
-                    .ref('mess/')
-                    .child(friend.id)
-                    .child('/friendList/')
-                    .child(this.state.uid)
-                    .child('/data')
-                    .push({incoming: true});
-
-                  Alert.alert(
-                    'Success',
-                    'Selamat anda sudah bisa mengobrol dengan teman yang anda tambahkan.',
-                    [
-                      {
-                        text: 'Kembali Ke Home',
-                        onPress: () =>
-                          this.setModalVisible(!this.state.modalVisible),
-                      },
-                      {
-                        text: 'Tambah Lagi',
-                        style: 'cancel',
-                      },
-                    ],
-                    {cancelable: false},
-                  );
                 }
               } else {
                 await firebase
                   .database()
                   .ref('mess/')
-                  .child(this.state.uid)
+                  .child(this.state.id)
                   .child('/friendList/')
                   .child(friend.id)
                   .set({data: true});
@@ -119,18 +93,23 @@ class Contact extends Component {
                 await firebase
                   .database()
                   .ref('mess/')
-                  .child(this.state.uid)
+                  .child(this.state.id)
                   .child('/friendList/')
                   .child(friend.id)
                   .child('/data')
-                  .push({incoming: false});
+                  .push({
+                    email: friend.email,
+                    id: friend.id,
+                    name: friend.name,
+                    image: friend.image,
+                  });
 
                 await firebase
                   .database()
                   .ref('mess/')
                   .child(friend.id)
                   .child('/friendList/')
-                  .child(this.state.uid)
+                  .child(this.state.id)
                   .set({data: true});
 
                 await firebase
@@ -138,18 +117,22 @@ class Contact extends Component {
                   .ref('mess/')
                   .child(friend.id)
                   .child('/friendList/')
-                  .child(this.state.uid)
+                  .child(this.state.id)
                   .child('/data')
-                  .push({incoming: true});
+                  .push({
+                    id: this.state.id,
+                    email: this.state.email,
+                    name: this.state.name,
+                    image: this.state.image,
+                  });
 
                 Alert.alert(
                   'Success',
                   'Selamat anda sudah bisa mengobrol dengan teman yang anda tambahkan.',
                   [
                     {
-                      text: 'Kembali Ke Home',
-                      onPress: () =>
-                        this.setModalVisible(!this.state.modalVisible),
+                      text: 'Kembali Ke Contact',
+                      onPress: () => this.props.navigation.navigate('Contact'),
                     },
                     {
                       text: 'Tambah Lagi',
