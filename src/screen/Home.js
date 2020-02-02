@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {View, Text, StyleSheet, FlatList, Image} from 'react-native';
 import {Right, Icon, Input} from 'native-base';
 import {
@@ -6,6 +6,8 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import firebase from 'react-native-firebase';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const contact = [
   {
@@ -52,52 +54,87 @@ const contact = [
   },
 ];
 
-const Home = props => {
-  return (
-    <>
-      <View style={styles.root}>
-        <View style={styles.header}>
-          <View style={styles.row}>
-            <Text style={styles.title}>Chat</Text>
-            <Right>
-              <Icon name="more" style={styles.setting} />
-            </Right>
+class Home extends Component {
+  constructor(props) {
+    super(props);
+  }
+  static navigationOptions = {
+    headerShown: false,
+  };
+  state = {
+    userList: [],
+    refreshing: false,
+    uid: '',
+  };
+
+  componentDidMount = async () => {
+    const uid = await AsyncStorage.getItem('userid');
+    this.setState({uid: uid, refreshing: true});
+    await firebase
+      .database()
+      .ref('/user')
+      .on('child_added', data => {
+        let person = data.val();
+        if (person.id != uid) {
+          this.setState(prevData => {
+            return {userList: [...prevData.userList, person]};
+          });
+          this.setState({refreshing: false});
+        }
+      });
+  };
+
+  render(props) {
+    return (
+      <>
+        <View style={styles.root}>
+          <View style={styles.header}>
+            <View style={styles.row}>
+              <Text style={styles.title}>Chat</Text>
+              <Right>
+                <Icon name="more" style={styles.setting} />
+              </Right>
+            </View>
+            <View style={{height: hp('8%')}}>
+              <Input
+                style={styles.search}
+                placeholder="Search Message"
+                placeholderTextColor="#D1DAE0"
+              />
+            </View>
           </View>
-          <View style={{height: hp('8%')}}>
-            <Input
-              style={styles.search}
-              placeholder="Search Message"
-              placeholderTextColor="#D1DAE0"
-            />
-          </View>
-        </View>
-        <FlatList
-          data={contact}
-          renderItem={({item}) => (
-            <TouchableOpacity onPress={() => props.navigation.navigate('Chat')}>
-              <View>
-                <View style={styles.listChat}>
-                  <View style={styles.profilePic}>
-                    <Image source={{uri: item.avatar}} style={styles.avatar} />
+          <FlatList
+            data={this.state.userList}
+            renderItem={({item}) => (
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('Chat',{item})}>
+                <View>
+                  <View style={styles.listChat}>
+                    <View style={styles.profilePic}>
+                      <Image
+                        source={{uri: item.image}}
+                        style={styles.avatar}
+                      />
+                    </View>
+                    <View>
+                      <Text style={styles.personName}>{item.name}</Text>
+                      <Text style={styles.personChat}>{item.email}</Text>
+                    </View>
+                    <Right>
+                      <Text>{item.date}</Text>
+                    </Right>
                   </View>
-                  <View>
-                    <Text style={styles.personName}>{item.name}</Text>
-                    <Text style={styles.personChat}>{item.chat}</Text>
-                  </View>
-                  <Right>
-                    <Text>{item.date}</Text>
-                  </Right>
+                  <View style={styles.lineStyle} />
                 </View>
-                <View style={styles.lineStyle} />
-              </View>
-            </TouchableOpacity>
-          )}
-          keyExtractor={item => item.id}
-        />
-      </View>
-    </>
-  );
-};
+              </TouchableOpacity>
+            )}
+            keyExtractor={item => item.id}
+          />
+        </View>
+      </>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   root: {

@@ -29,7 +29,7 @@ export default class Profile extends Component {
       .auth()
       .signOut()
       .then(() => this.props.navigation.navigate('Login'));
-    Alert.alert('See you next time');
+    Alert.alert('Good Bye >_<');
   };
 
   render() {

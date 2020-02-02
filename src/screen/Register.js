@@ -131,7 +131,7 @@ export default class Register extends Component {
               name: this.state.name,
               status: 'Offline',
               email: this.state.email,
-              photo: 'https://i.imgur.com/1KoMPoK.png',
+              image: 'https://i.imgur.com/1KoMPoK.png',
               latitude: this.state.latitude,
               longitude: this.state.longitude,
               id: response.user.uid,

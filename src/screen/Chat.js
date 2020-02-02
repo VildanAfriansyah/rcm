@@ -1,44 +1,126 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Image} from 'react-native';
 import {Right, Icon} from 'native-base';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {GiftedChat} from 'react-native-gifted-chat';
+import {GiftedChat, Send, Bubble} from 'react-native-gifted-chat';
 import Icon1 from 'react-native-vector-icons/FontAwesome5';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-community/async-storage';
+import firebase from 'react-native-firebase';
 
 export default class Chat extends React.Component {
+  static navigationOptions = ({navigation}) => {
+    return {
+      title: navigation.getParam('item').name,
+      headerStyle: {
+        backgroundColor: '#f48023',
+        height: 100,
+      },
+      headerTitleStyle: {
+        color: 'white',
+      },
+    };
+  };
   state = {
-    messages: [],
+    message: '',
+    messageList: [],
+    person: this.props.navigation.getParam('item'),
+    userId: AsyncStorage.getItem('userid'),
+    userName: AsyncStorage.getItem('user.name'),
+    userAvatar: AsyncStorage.getItem('user.photo'),
   };
 
-  componentDidMount() {
-    this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: 'Hai Sayang',
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://placeimg.com/140/140/any',
-          },
+  onSend = async () => {
+    if (this.state.message.length > 0) {
+      let msgId = firebase
+        .database()
+        .ref('messages')
+        .child(this.state.userId)
+        .child(this.state.person.id)
+        .push().key;
+      let updates = {};
+      let message = {
+        _id: msgId,
+        text: this.state.message,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        user: {
+          _id: this.state.userId,
+          name: this.state.userName,
+          avatar: this.state.userAvatar,
         },
-      ],
-    });
-  }
+      };
+      updates[
+        'messages/' +
+          this.state.userId +
+          '/' +
+          this.state.person.id +
+          '/' +
+          msgId
+      ] = message;
+      updates[
+        'messages/' +
+          this.state.person.id +
+          '/' +
+          this.state.userId +
+          '/' +
+          msgId
+      ] = message;
+      firebase
+        .database()
+        .ref()
+        .update(updates);
+      this.setState({message: ''});
+    }
+  };
+
+  componentDidMount = async () => {
+    const userId = await AsyncStorage.getItem('userid');
+    const userName = await AsyncStorage.getItem('user.name');
+    const userAvatar = await AsyncStorage.getItem('user.photo');
+    this.setState({userId, userName, userAvatar});
+    firebase
+      .database()
+      .ref('messages')
+      .child(this.state.userId)
+      .child(this.state.person.id)
+      .on('child_added', val => {
+        this.setState(previousState => ({
+          messageList: GiftedChat.append(previousState.messageList, val.val()),
+        }));
+      });
+  };
 
   back() {
     this.props.navigation.navigate('homeStack');
   }
 
-  onSend(messages = []) {
-    this.setState(previousState => ({
-      messages: GiftedChat.append(previousState.messages, messages),
-    }));
+  renderBubble(props) {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#F3AC14',
+          },
+        }}
+      />
+    );
+  }
+
+  renderSend(props) {
+    return (
+      <Send {...props}>
+        <View>
+          <Image
+            source={require('../../assets/icons/send.png')}
+            style={{margin: 1}}
+          />
+        </View>
+      </Send>
+    );
   }
 
   render() {
@@ -62,10 +144,16 @@ export default class Chat extends React.Component {
           </View>
         </View>
         <GiftedChat
-          messages={this.state.messages}
-          onSend={messages => this.onSend(messages)}
+          renderSend={this.renderSend}
+          renderBubble={this.renderBubble}
+          text={this.state.message}
+          onInputTextChanged={val => {
+            this.setState({message: val});
+          }}
+          messages={this.state.messageList}
+          onSend={() => this.onSend()}
           user={{
-            _id: 1,
+            _id: this.state.userId,
           }}
         />
       </View>
