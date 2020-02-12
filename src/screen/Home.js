@@ -10,6 +10,8 @@ import firebase from 'react-native-firebase';
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import Loading from './Loading';
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -19,23 +21,23 @@ class Home extends Component {
   };
   state = {
     userList: [],
-    refreshing: false,
+    loading: true,
     uid: '',
   };
 
   componentDidMount = async () => {
     const uid = await AsyncStorage.getItem('userid');
-    this.setState({uid: uid, refreshing: true});
+    this.setState({uid: uid, loading: true});
     await firebase
       .database()
       .ref('/user')
       .on('child_added', data => {
         let person = data.val();
-        if (person.id != uid) {
+        if (person.id !== uid) {
           this.setState(prevData => {
             return {userList: [...prevData.userList, person]};
           });
-          this.setState({refreshing: false});
+          this.setState({loading: false});
         }
       });
   };
@@ -62,30 +64,39 @@ class Home extends Component {
               />
             </View>
           </View>
-          <FlatList
-            data={this.state.userList}
-            renderItem={({item}) => (
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('Chat', {item})}>
-                <View>
-                  <View style={styles.listChat}>
-                    <View style={styles.profilePic}>
-                      <Image source={{uri: item.image}} style={styles.avatar} />
+
+          {this.state.loading && <Loading />}
+          {!this.state.isLoading && (
+            <FlatList
+              data={this.state.userList}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    this.props.navigation.navigate('Chat', {item})
+                  }>
+                  <View>
+                    <View style={styles.listChat}>
+                      <View style={styles.profilePic}>
+                        <Image
+                          source={{uri: item.image}}
+                          style={styles.avatar}
+                        />
+                      </View>
+                      <View>
+                        <Text style={styles.personName}>{item.name}</Text>
+                        <Text style={styles.personChat}>{item.email}</Text>
+                      </View>
+                      <Right>
+                        <Text>{item.date}</Text>
+                      </Right>
                     </View>
-                    <View>
-                      <Text style={styles.personName}>{item.name}</Text>
-                      <Text style={styles.personChat}>{item.email}</Text>
-                    </View>
-                    <Right>
-                      <Text>{item.date}</Text>
-                    </Right>
+                    <View style={styles.lineStyle} />
                   </View>
-                  <View style={styles.lineStyle} />
-                </View>
-              </TouchableOpacity>
-            )}
-            keyExtractor={item => item.id}
-          />
+                </TouchableOpacity>
+              )}
+              keyExtractor={item => item.id}
+            />
+          )}
         </View>
       </>
     );

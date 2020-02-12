@@ -9,6 +9,8 @@ import {
   PermissionsAndroid,
   ToastAndroid,
   Platform,
+  ActivityIndicator,
+  BackHandler,
 } from 'react-native';
 import {Card} from 'native-base';
 import {
@@ -28,9 +30,9 @@ export default class Login extends Component {
       email: '',
       password: '',
       errorMesasge: null,
+      loading: false,
     };
   }
-  // state = {email: '', password: '', errorMessage: null};
 
   componentDidMount = async () => {
     this._isMounted = true;
@@ -42,6 +44,10 @@ export default class Login extends Component {
     Geolocation.clearWatch();
     Geolocation.stopObserving();
   }
+
+  exit = () => {
+    BackHandler.exitApp();
+  };
 
   inputHandler = (name, value) => {
     this.setState(() => ({[name]: value}));
@@ -84,37 +90,34 @@ export default class Login extends Component {
     const hasLocationPermission = await this.hasLocationPermission();
 
     if (!hasLocationPermission) {
-      return;
+      this.exit();
     }
-
-    this.setState({loading: true}, () => {
-      Geolocation.getCurrentPosition(
-        position => {
-          this.setState({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            loading: false,
-          });
-        },
-        error => {
-          this.setState({errorMessage: error});
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 2000,
-          distanceFilter: 50,
-          forceRequestLocation: true,
-        },
-      );
-    });
+    Geolocation.getCurrentPosition(
+      position => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          loading: false,
+        });
+      },
+      error => {
+        this.setState({errorMessage: error});
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 2000,
+        distanceFilter: 50,
+        forceRequestLocation: true,
+      },
+    );
   };
 
   handleChange = key => val => {
     this.setState({[key]: val});
   };
 
-  loginPress = async () => {
+  login = async () => {
     const {email, password} = this.state;
     if (email.length < 6) {
       ToastAndroid.show(
@@ -141,6 +144,7 @@ export default class Login extends Component {
             AsyncStorage.setItem('user.image', user[0].image);
           }
         });
+
       firebase
         .auth()
         .signInWithEmailAndPassword(email, password)
@@ -173,6 +177,7 @@ export default class Login extends Component {
   }
 
   render() {
+    const {loading} = this.state;
     return (
       <View style={styles.root}>
         <View style={styles.box}>
@@ -209,30 +214,58 @@ export default class Login extends Component {
             </View>
             <View style={styles.row}>
               <View style={styles.row}>
-                <LinearGradient
-                  style={styles.buttonLogin}
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  colors={['#FADA80', '#f0c95d']}>
-                  <TouchableOpacity
+                {loading === false ? (
+                  <LinearGradient
                     style={styles.buttonLogin}
-                    onPress={this.loginPress}>
-                    <Text style={styles.buttonTextLogin}>MASUK</Text>
-                  </TouchableOpacity>
-                </LinearGradient>
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#FADA80', '#f0c95d']}>
+                    <TouchableOpacity
+                      style={styles.buttonLogin}
+                      onPress={this.login}>
+                      <Text style={styles.buttonTextLogin}>Login</Text>
+                    </TouchableOpacity>
+                  </LinearGradient>
+                ) : (
+                  <LinearGradient
+                    style={styles.buttonLogin}
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#f0d797', '#f0d797']}>
+                    <TouchableOpacity
+                      style={styles.buttonLogin}
+                      onPress={this.login}>
+                      <ActivityIndicator />
+                    </TouchableOpacity>
+                  </LinearGradient>
+                )}
               </View>
               <View style={styles.row}>
-                <LinearGradient
-                  style={styles.buttonLogin}
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  colors={['#FADA80', '#f0c95d']}>
-                  <TouchableOpacity
+                {loading === false ? (
+                  <LinearGradient
                     style={styles.buttonLogin}
-                    onPress={() => this.register()}>
-                    <Text style={styles.buttonTextRegister}>REGISTER</Text>
-                  </TouchableOpacity>
-                </LinearGradient>
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#FADA80', '#f0c95d']}>
+                    <TouchableOpacity
+                      style={styles.buttonLogin}
+                      onPress={() => this.register()}>
+                      <Text style={styles.buttonTextRegister}>REGISTER</Text>
+                    </TouchableOpacity>
+                  </LinearGradient>
+                ) : (
+                  <LinearGradient
+                    style={styles.buttonLogin}
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#FADA80', '#f0c95d']}>
+                    <TouchableOpacity
+                      style={styles.buttonLogin}
+                      onPress={this.login}>
+                      <ActivityIndicator />
+                    </TouchableOpacity>
+                  </LinearGradient>
+                )}
               </View>
             </View>
           </Card>
